@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from github_api import clone_repo
-from code_parser import analyze_project
+from code_parser import CodeParser  # Import CodeParser class
 from ia_local import query_ai
+from error_handling import handle_error  # Import error handling
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -12,6 +13,9 @@ class CodeAssistantApp(ctk.CTk):
         
         self.title("Assistente de Código Local")
         self.geometry("1000x700")
+        
+        # Initialize CodeParser
+        self.code_parser = CodeParser()  # Added initialization
         
         # Configurar layout principal
         self.grid_columnconfigure(0, weight=1)
@@ -59,32 +63,48 @@ class CodeAssistantApp(ctk.CTk):
         self.project_data = None
     
     def clone_and_analyze(self):
-        repo_url = self.repo_entry.get()
-        if repo_url:
-            clone_path = clone_repo(repo_url)
-            if clone_path:
-                self.project_data = analyze_project(clone_path)
-                self.add_message("Sistema", "Projeto analisado com sucesso!")
+        try:
+            repo_url = self.repo_entry.get()
+            if repo_url:
+                clone_path = clone_repo(repo_url)
+                if clone_path:
+                    # Use the code_parser instance to analyze the project
+                    self.project_data = self.code_parser.analyze_project(clone_path)
+                    self.add_message("Sistema", "Projeto analisado com sucesso!")
+                else:
+                    self.add_message("Sistema", "Falha ao clonar repositório.")
+        except Exception as e:
+            handle_error("Clone e Análise", e)
     
     def send_question(self):
-        question = self.user_input.get()
-        if question and self.project_data:
-            context = f"Projeto: {self.project_data}\nPergunta: {question}"
-            response = query_ai(context)
-            self.add_message("Você", question)
-            self.add_message("IA", response)
+        try:
+            question = self.user_input.get()
+            if question and self.project_data:
+                context = f"Projeto: {self.project_data}\nPergunta: {question}"
+                response = query_ai(context)
+                self.add_message("Você", question)
+                self.add_message("IA", response)
+                self.user_input.delete(0, 'end')  # Clear input after sending
+        except Exception as e:
+            handle_error("Envio de Pergunta", e)
     
     def add_message(self, sender, message):
-        frame = ctk.CTkFrame(self.chat_frame)
-        label = ctk.CTkLabel(
-            frame,
-            text=f"{sender}: {message}",
-            wraplength=800,
-            justify="left"
-        )
-        label.pack(padx=5, pady=2)
-        frame.pack(fill="x")
+        try:
+            frame = ctk.CTkFrame(self.chat_frame)
+            label = ctk.CTkLabel(
+                frame,
+                text=f"{sender}: {message}",
+                wraplength=800,
+                justify="left"
+            )
+            label.pack(padx=5, pady=2)
+            frame.pack(fill="x")
+        except Exception as e:
+            print(f"Error adding message: {e}")
 
 if __name__ == "__main__":
-    app = CodeAssistantApp()
-    app.mainloop()
+    try:
+        app = CodeAssistantApp()
+        app.mainloop()
+    except Exception as e:
+        handle_error("Inicialização da aplicação", e)

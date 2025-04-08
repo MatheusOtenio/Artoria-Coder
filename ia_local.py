@@ -1,4 +1,5 @@
 import requests
+from error_handling import handle_error  # Import error handling
 
 def query_ai(context, model="deepseek-coder"):
     try:
@@ -16,4 +17,5 @@ def query_ai(context, model="deepseek-coder"):
         )
         return response.json()["response"]
     except Exception as e:
+        handle_error("IA Query", e)
         return f"Erro na comunicação com a IA: {str(e)}"

@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import os
 from tkinter import ttk
+from error_handling import handle_error  # Added import
 
 class ProjectTreeView(ctk.CTkFrame):
     def __init__(self, parent, select_callback):
@@ -17,9 +18,12 @@ class ProjectTreeView(ctk.CTkFrame):
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
 
     def build_tree(self, project_path):
-        self.tree.delete(*self.tree.get_children())
-        root_node = self.tree.insert('', 'end', text=project_path.name, open=True)
-        self._populate_tree(root_node, project_path)
+        try:
+            self.tree.delete(*self.tree.get_children())
+            root_node = self.tree.insert('', 'end', text=project_path.name, open=True)
+            self._populate_tree(root_node, project_path)
+        except Exception as e:
+            handle_error("Construção da Árvore de Projeto", e)
 
     def _populate_tree(self, parent, path):
         try:
@@ -34,9 +38,12 @@ class ProjectTreeView(ctk.CTkFrame):
             pass
 
     def on_select(self, event):
-        item = self.tree.selection()[0]
-        path = self._get_full_path(item)
-        self.select_callback(path)
+        try:
+            item = self.tree.selection()[0]
+            path = self._get_full_path(item)
+            self.select_callback(path)
+        except Exception as e:
+            handle_error("Seleção de Arquivo", e)
 
     def _get_full_path(self, item):
         path = []

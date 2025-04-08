@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import json
+from error_handling import handle_error  # Added import
 
 class SettingsWindow(ctk.CTkToplevel):
     def __init__(self, parent):
@@ -32,14 +33,19 @@ class SettingsWindow(ctk.CTkToplevel):
         try:
             with open('settings.json', 'r') as f:
                 return json.load(f)
-        except:
+        except Exception as e:
+            print(f"Warning: Could not load settings: {e}")
             return {}
 
     def save_settings(self):
-        self.settings = {
-            'model': self.model_entry.get(),
-            'endpoint': self.endpoint_entry.get()
-        }
-        with open('settings.json', 'w') as f:
-            json.load(f, self.settings)
-        self.destroy()
+        try:
+            self.settings = {
+                'model': self.model_entry.get(),
+                'endpoint': self.endpoint_entry.get()
+            }
+            # Fixed json.load to json.dump and swapped parameters
+            with open('settings.json', 'w') as f:
+                json.dump(self.settings, f)
+            self.destroy()
+        except Exception as e:
+            handle_error("Salvar Configurações", e)

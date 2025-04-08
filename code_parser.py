@@ -17,17 +17,24 @@ def setup_parsers():
             f'vendors/{lang}.so',
             [repo]
         )
-        
-def analyze_project(self, project_path):
-    return self.analyze_project(project_path)
+
 class CodeParser:
     def __init__(self):
+        # Call setup_parsers to ensure parsers are built
+        try:
+            setup_parsers()  # Added call to setup parsers
+        except Exception as e:
+            print(f"Warning: Failed to set up parsers: {e}")
+            
         self.parsers = {}
         for lang in LANGUAGES:
-            self.parsers[lang] = Parser()
-            self.parsers[lang].set_language(
-                Language(f'vendors/{lang}.so', lang)
-            )
+            try:
+                self.parsers[lang] = Parser()
+                self.parsers[lang].set_language(
+                    Language(f'vendors/{lang}.so', lang)
+                )
+            except Exception as e:
+                print(f"Warning: Failed to initialize parser for {lang}: {e}")
         
         self.file_types = {
             '.py': 'python',
@@ -73,9 +80,14 @@ class CodeParser:
                     parsed['classes'].append(node.name)
                 elif isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom):
                     parsed['imports'].append(ast.unparse(node))
-        except:
-            pass
+        except Exception as e:
+            print(f"Error parsing Python file: {e}")
         return parsed
+    
+    def _parse_javascript(self, tree):
+        # Add implementation for JavaScript parsing
+        # This is a placeholder
+        return {'functions': [], 'classes': [], 'imports': []}
 
     def analyze_project(self, project_path):
         structure = {'languages': {}, 'files': []}
