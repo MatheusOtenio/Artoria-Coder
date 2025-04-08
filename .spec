@@ -1,0 +1,1 @@
+pyinstaller --name CodeAssistant --onefile --windowed --icon=icon.ico main.py
