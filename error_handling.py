@@ -1,4 +1,4 @@
-from customtkinter import CTkMessagebox
+from CTkMessagebox import CTkMessagebox
 import traceback
 
 def handle_error(context, error):

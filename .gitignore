@@ -1,0 +1,27 @@
+# Cache e bibliotecas compiladas
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.code_assistant_cache/
+
+# Ambiente virtual
+venv/
+env/
+ENV/
+
+# Arquivos de log
+*.log
+error_log.txt
+
+# Diretório de histórico de conversas
+conversation_history/
+
+# Configurações locais
+settings.json
+
+# Arquivos temporários
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
