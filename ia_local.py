@@ -52,6 +52,7 @@ def query_ai(context, model=None):
             timeout=30  # Adicionando timeout para evitar espera infinita
         )
         
+        
         if response.status_code == 200:
             return response.json().get("response", "Resposta vazia da IA")
         else:
