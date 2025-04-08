@@ -1,8 +1,8 @@
 import customtkinter as ctk
 from github_api import clone_repo
-from code_parser import CodeParser  # Import CodeParser class
-from ia_local import query_ai
-from error_handling import handle_error  # Import error handling
+from code_parser import CodeParser
+from ia_local import query_ai, wait_for_ollama  # Adicionei wait_for_ollama aqui
+from error_handling import handle_error
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -15,7 +15,7 @@ class CodeAssistantApp(ctk.CTk):
         self.geometry("1000x700")
         
         # Initialize CodeParser
-        self.code_parser = CodeParser()  # Added initialization
+        self.code_parser = CodeParser()
         
         # Configurar layout principal
         self.grid_columnconfigure(0, weight=1)
@@ -61,6 +61,10 @@ class CodeAssistantApp(ctk.CTk):
         self.send_btn.pack(side="left", padx=5)
         
         self.project_data = None
+        
+        # Adicionar mensagem sobre status do Ollama na inicialização
+        if not wait_for_ollama(max_retries=1):  # Verificação rápida
+            self.add_message("Sistema", "Aviso: Servidor Ollama não detectado. Verifique se o Ollama está em execução.")
     
     def clone_and_analyze(self):
         try:
@@ -104,6 +108,10 @@ class CodeAssistantApp(ctk.CTk):
 
 if __name__ == "__main__":
     try:
+        # Verifica se o Ollama está disponível
+        if not wait_for_ollama(max_retries=3):
+            print("Aviso: Servidor Ollama não está disponível. Algumas funcionalidades podem não funcionar.")
+        
         app = CodeAssistantApp()
         app.mainloop()
     except Exception as e:
