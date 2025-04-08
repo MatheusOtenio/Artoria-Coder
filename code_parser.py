@@ -17,7 +17,9 @@ def setup_parsers():
             f'vendors/{lang}.so',
             [repo]
         )
-
+        
+def analyze_project(self, project_path):
+    return self.analyze_project(project_path)
 class CodeParser:
     def __init__(self):
         self.parsers = {}

@@ -2,6 +2,8 @@ import json
 import hashlib
 from pathlib import Path
 import tempfile
+import time
+import shutil
 
 CACHE_DIR = Path.home() / '.code_assistant_cache'
 
@@ -34,9 +36,21 @@ class ProjectCache:
         if dest.exists():
             return dest
         
-        # Implementar cópia ou mover diretório
-        # (usar shutil.copytree ou similar)
-        # ...
+def cache_project(self, repo_url, project_path):
+    key = self.get_cache_key(repo_url)
+    dest = CACHE_DIR / key
+    if dest.exists():
+        return dest
+    
+    # Copy the directory
+    shutil.copytree(project_path, dest)
+    
+    self.cache_index[key] = {
+        'url': repo_url,
+        'timestamp': time.time()
+    }
+    self._save_index()
+    return dest
         
         self.cache_index[key] = {
             'url': repo_url,
