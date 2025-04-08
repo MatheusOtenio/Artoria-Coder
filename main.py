@@ -61,11 +61,10 @@ class CodeAssistantApp(ctk.CTk):
         )
         self.send_btn.pack(side="left", padx=5)
         
-        # Indicador de progresso
+        # Indicador de progresso - usando pack consistentemente
         self.progress_bar = ctk.CTkProgressBar(self.input_frame)
-        self.progress_bar.pack(side="left", padx=5)
         self.progress_bar.set(0)
-        self.progress_bar.grid_remove()  # Esconde inicialmente
+        # Não adicionamos ao layout ainda - será mostrado quando necessário
         
         self.project_data = None
         self.active_tasks = {}  # Para controlar threads ativas
@@ -184,11 +183,11 @@ class CodeAssistantApp(ctk.CTk):
     def _show_progress(self):
         """Mostra e inicializa a barra de progresso"""
         self.progress_bar.set(0)
-        self.progress_bar.grid()
+        self.progress_bar.pack(side="left", padx=5)  # Usando pack consistentemente
     
     def _hide_progress(self):
         """Esconde a barra de progresso"""
-        self.progress_bar.grid_remove()
+        self.progress_bar.pack_forget()  # Usando pack_forget em vez de grid_remove
     
     def _update_progress(self, value):
         """Atualiza o valor da barra de progresso"""
@@ -198,9 +197,9 @@ class CodeAssistantApp(ctk.CTk):
         """Atualiza a última mensagem com o conteúdo completo"""
         try:
             # Remover a mensagem de "Processando..." e adicionar a resposta real
-            for widget in self.chat_frame.winfo_children():
-                if widget == self.chat_frame.winfo_children()[-1]:  # Último widget
-                    widget.destroy()
+            children = self.chat_frame.winfo_children()
+            if children:
+                children[-1].destroy()  # Remove o último widget (mensagem de processamento)
             self.add_message(sender, message)
         except Exception as e:
             print(f"Error updating message: {e}")
