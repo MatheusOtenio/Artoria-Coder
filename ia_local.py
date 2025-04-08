@@ -27,12 +27,12 @@ def get_settings():
             return json.load(f)
     except Exception as e:
         print(f"Aviso: Não foi possível carregar as configurações: {e}")
-        return {"model": "deepseek-coder", "endpoint": "http://localhost:11434/api/generate"}
+        return {"model": "deepseek-coder:1.3b", "endpoint": "http://localhost:11434/api/generate"}
 
 def query_ai(context, model=None):
     try:
         settings = get_settings()
-        model = model or settings.get("model", "deepseek-coder")
+        model = model or settings.get("model", "deepseek-coder:1.3b")
         
         # Verifica se o Ollama está disponível
         if not check_ollama_available():
